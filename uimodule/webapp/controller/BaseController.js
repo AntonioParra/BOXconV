@@ -1,4 +1,10 @@
-sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/core/routing/History", "sap/ui/core/UIComponent", "com/cubiclan/boxconv/model/formatter"], function (Controller, History, UIComponent, formatter) {
+sap.ui.define([
+    "sap/ui/core/mvc/Controller", 
+    "sap/ui/core/routing/History", 
+    "sap/ui/core/UIComponent", 
+    "com/cubiclan/boxconv/model/formatter",
+    "sap/ui/model/json/JSONModel"
+], function (Controller, History, UIComponent, formatter, JSONModel) {
     "use strict";
 
     return Controller.extend("com.cubiclan.boxconv.controller.BaseController", {
@@ -23,6 +29,12 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/core/routing/History", "sap
          */
         setModel: function (oModel, sName) {
             return this.getView().setModel(oModel, sName);
+        },
+
+        setModelData: function(data, modelName) {
+            var model = new JSONModel(data);
+            model.setSizeLimit(999999);
+            this.setModel(model, modelName);
         },
 
         /**
@@ -58,5 +70,9 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/core/routing/History", "sap
                 this.getRouter().navTo("appHome", {}, true /* no history*/);
             }
         },
+
+        getBaseUrl: function () {
+            return "192.168.68.122:8080/Cuberite/api/boxconv";
+        }
     });
 });

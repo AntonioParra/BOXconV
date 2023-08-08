@@ -71,8 +71,15 @@
       },
       "routes": [
         {
+          "name": "RouteMainViewWithBase64Path",
+          "pattern": "{base64Path}",
+          "target": [
+            "TargetMainView"
+          ]
+        },
+        {
           "name": "RouteMainView",
-          "pattern": ":?query:",
+          "pattern": "",
           "target": [
             "TargetMainView"
           ]

@@ -1,7 +1,39 @@
 <mvc:View controllerName="com.cubiclan.boxconv.controller.MainView"
     xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-    xmlns="sap.m">
+    xmlns="sap.m" xmlns:core="sap.ui.core">
     <Page id="page" title="{i18n>title}">
-        <content />
+    <subHeader>
+        <Toolbar>
+            <content>
+                <Button icon="sap-icon://arrow-left" enabled="{= ${/DATA/parent} !== '..' }" type="Ghost" press="onNavBack"></Button>
+                <Button icon="sap-icon://arrow-top" enabled="{= ${/DATA/parent} !== '..' }" type="Ghost" press="onNavParent"></Button>
+                <Breadcrumbs links="{/DATA/parentFiles}" class="sapUiTinyMarginBegin" currentLocationText="{/DATA/label}">
+                    <Link text="{label}" press=""/>
+                </Breadcrumbs>
+                <ToolbarSpacer />
+                <ToggleButton icon="sap-icon://alphabetical-order" type="Ghost" press="toggleSort"></ToggleButton>
+            </content>
+        </Toolbar>
+    </subHeader>
+        <content>
+            <Table id="listTable" items="{path: '/DATA/files', sorter: {path: '', comparator: '.typeComparator'}}">
+                <columns>
+                    <Column width="64px" hAlign="Center"></Column>
+                    <Column></Column>
+                    <Column></Column>
+                    <Column width="64px" hAlign="Center"></Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <core:Icon src="{= ${isDirectory} ? 'sap-icon://open-folder' : 'sap-icon://document' }"/>
+                            <Text text="{label}" tooltip="{nombre}"/>
+                            <Text text="{path: 'length', formatter: '.formatter.fileSize' }" visible="{isFile}"/>
+                            <Button icon="{= ${isDirectory} ? 'sap-icon://arrow-right' : 'sap-icon://download' }" press="onFileSelected"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
     </Page>
 </mvc:View>
