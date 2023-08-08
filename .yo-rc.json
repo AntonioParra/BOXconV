@@ -1,0 +1,23 @@
+{
+  "generator-template-ui5-project": {
+    "projectname": "boxconv",
+    "namespaceUI5": "com.cubiclan",
+    "enableFPM": false,
+    "platform": "Static webserver",
+    "viewtype": "XML",
+    "ui5libs": "Content delivery network (OpenUI5)",
+    "newdir": false,
+    "initrepo": true,
+    "namespaceURI": "com/cubiclan",
+    "uimodules": [
+      "uimodule"
+    ],
+    "opa5Journeys": [
+      "Main"
+    ],
+    "opa5pos": [
+      "Main"
+    ],
+    "setupCompleted": true
+  }
+}
