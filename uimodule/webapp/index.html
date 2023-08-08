@@ -22,8 +22,10 @@
         data-sap-ui-async="true"
         data-sap-ui-frameOptions="trusted"
     ></script>
+    <!-- <script src="https://hlsjs.video-dev.org/dist/hls.js"></script>   -->
 </head>
 <body class="sapUiBody sapUiSizeCompact" id="content">
+    <!-- <video height="200" id="video" controls></video> -->
     <div
         data-sap-ui-component
         data-name="com.cubiclan.boxconv"
@@ -31,5 +33,21 @@
         data-settings='{"id" : "com.cubiclan.boxconv"}'
         data-handle-validation="true"
     ></div>
+    <!-- <script defer>
+        var video = document.getElementById('video');
+        globalVideo = video;
+        if (Hls.isSupported()) {
+            var hls = new Hls({
+            debug: true,
+            });
+            hls.loadSource('http://192.168.68.122:8080/Cuberite/api/boxconv/download' + '?FileName=' + 'Series\\Anime\\Completados\\Zero no Tsukaima\\Zero no Tsukaima\\prueba.mp4');
+            hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                console.log("miau -------------------------------------------------------------------")
+                video.muted = true;
+                video.play();
+            });
+            hls.attachMedia(video);
+        }
+    </script> -->
 </body>
 </html>
