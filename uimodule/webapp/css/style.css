@@ -1,1 +1,19 @@
-/* Enter your custom styles here */
+
+
+
+.videoPlayer {
+    max-width: 800px;
+    max-height: 610px;
+}
+.videoPlayer video {
+    width: 100%;
+    height: 100%;
+}
+
+
+
+.fileCard {
+    height: 150px;
+    border: 1px solid red;
+    border-radius: 8px;
+}

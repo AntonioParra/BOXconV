@@ -72,7 +72,30 @@ sap.ui.define([
         },
 
         getBaseUrl: function () {
-            return "192.168.68.122:8080/Cuberite/api/boxconv";
+            return "192.168.68.134:8080/Cuberite/api/boxconv";
+        },
+
+        formatExtensionTypeIcon: function(isDirectory, fileType) {
+            if(isDirectory) {
+                return "sap-icon://open-folder";
+            }
+
+            var dicc = {
+                "AUDIO": "sap-icon://attachment-audio",
+                "CALENDAR": "sap-icon://calendar",
+                "CODE": "sap-icon://attachment-html",
+                "EBOOK": "sap-icon://attachment-e-pub",
+                "FONT": "sap-icon://attachment-text-file",
+                "IMAGE": "sap-icon://attachment-photo",
+                "PDF": "sap-icon://pdf-attachment",
+                "PRESENTATION": "sap-icon://ppt-attachment",
+                "SPREADSHEET": "sap-icon://excel-attachment",
+                "TEXT": "sap-icon://document-text",
+                "VIDEO": "sap-icon://attachment-video",
+                "ZIP": "sap-icon://attachment-zip-file",
+                "": "sap-icon://document",
+            };
+            return dicc[fileType] || "sap-icon://document";
         }
     });
 });

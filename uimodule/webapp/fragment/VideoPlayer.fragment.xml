@@ -1,0 +1,12 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core" xmlns:control="com.cubiclan.boxconv.control">
+	<Dialog>
+        <customHeader>
+            <Toolbar>
+                <Title text="{stream>/title}"></Title>
+                <ToolbarSpacer />
+                <Button icon="sap-icon://decline" press="closeVideoPlayerPopup"></Button>
+            </Toolbar>
+        </customHeader>
+        <control:Video url="{stream>/url}"></control:Video>
+    </Dialog>
+</core:FragmentDefinition>

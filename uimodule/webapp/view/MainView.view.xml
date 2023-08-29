@@ -1,6 +1,7 @@
 <mvc:View controllerName="com.cubiclan.boxconv.controller.MainView"
     xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-    xmlns="sap.m" xmlns:core="sap.ui.core">
+    xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout"
+    xmlns:control="com.cubiclan.boxconv.control">
     <Page id="page" title="{i18n>title}">
     <subHeader>
         <Toolbar>
@@ -8,32 +9,50 @@
                 <Button icon="sap-icon://arrow-left" enabled="{= ${/DATA/parent} !== '..' }" type="Ghost" press="onNavBack"></Button>
                 <Button icon="sap-icon://arrow-top" enabled="{= ${/DATA/parent} !== '..' }" type="Ghost" press="onNavParent"></Button>
                 <Breadcrumbs links="{/DATA/parentFiles}" class="sapUiTinyMarginBegin" currentLocationText="{/DATA/label}">
-                    <Link text="{label}" press=""/>
+                    <Link text="{label}" press="onBreadcrumbs"/>
                 </Breadcrumbs>
                 <ToolbarSpacer />
+                <SegmentedButton>
+                    <items>
+                        <SegmentedButtonItem icon="sap-icon://list" press="onPressListMode"></SegmentedButtonItem>
+                        <SegmentedButtonItem icon="sap-icon://border" press="onPressGridMode"></SegmentedButtonItem>
+                    </items>
+                </SegmentedButton>
                 <ToggleButton icon="sap-icon://alphabetical-order" type="Ghost" press="toggleSort"></ToggleButton>
             </content>
         </Toolbar>
     </subHeader>
         <content>
-            <Table id="listTable" items="{path: '/DATA/files', sorter: {path: '', comparator: '.typeComparator'}}">
+            <Table id="listTable" items="{path: '/DATA/files', sorter: {path: '', comparator: '.typeComparator'}}" visible="{= ${itemsMode>/mode} === 'list' }">
                 <columns>
                     <Column width="64px" hAlign="Center"></Column>
                     <Column></Column>
                     <Column></Column>
-                    <Column width="64px" hAlign="Center"></Column>
+                    <Column width="128px" hAlign="Center"></Column>
                 </columns>
                 <items>
                     <ColumnListItem>
                         <cells>
-                            <core:Icon src="{= ${isDirectory} ? 'sap-icon://open-folder' : 'sap-icon://document' }"/>
+                            <!-- <core:Icon src="{= ${isDirectory} ? 'sap-icon://open-folder' : 'sap-icon://document' }"/> -->
+                            <core:Icon src="{parts:['isDirectory','fileType'],formatter:'.formatExtensionTypeIcon'}"/>
                             <Text text="{label}" tooltip="{nombre}"/>
                             <Text text="{path: 'length', formatter: '.formatter.fileSize' }" visible="{isFile}"/>
-                            <Button icon="{= ${isDirectory} ? 'sap-icon://arrow-right' : 'sap-icon://download' }" press="onFileSelected"/>
+                            <HBox justifyContent="End">
+                                <Button icon="sap-icon://media-play" visible="{webAccessible}" press="onStreamSelected" class="sapUiSmallMarginBegin"/>
+                                <Button icon="sap-icon://arrow-right" visible="{isDirectory}" press="onDirectorySelected" class="sapUiSmallMarginBegin"/>
+                                <Button icon="sap-icon://download" visible="{isFile}" press="onDownloadSelected" class="sapUiSmallMarginBegin"/>
+                            </HBox>
                         </cells>
                     </ColumnListItem>
                 </items>
             </Table>
+            <l:Grid defaultSpan="XL2 L3 M4 S6" content="{path: '/DATA/files', sorter: {path: '', comparator: '.typeComparator'}}" visible="{= ${itemsMode>/mode} === 'grid' }">
+                <control:FileCard isDirectory="{isDirectory}">
+                    <control:icon><core:Icon src="{parts:['isDirectory','fileType'],formatter:'.formatExtensionTypeIcon'}"/></control:icon>
+                    <control:image><Image src="{path:'path',formatter:'.formatterPreviewUrl'}" /></control:image>
+                    <control:label><Label text="{label}"/></control:label>
+                </control:FileCard>
+            </l:Grid>
         </content>
     </Page>
 </mvc:View>

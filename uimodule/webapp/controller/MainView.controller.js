@@ -37,7 +37,27 @@ sap.ui.define(
                     this.getView().setBusy(false);
                     this.setModelData(data);
                 }.bind(this));
-            
+
+                this.setListMode();
+            },
+
+            setListMode: function() {
+                var model = this.getView().getModel("itemsMode");
+                if(!model) {
+                    this.onPressListMode();
+                }
+            },
+
+            onPressListMode: function() {
+                this.setModelData({
+                    mode: "list"
+                }, "itemsMode");
+            },
+
+            onPressGridMode: function() {
+                this.setModelData({
+                    mode: "grid"
+                }, "itemsMode");
             },
 
             onNavParent: function() {
@@ -76,13 +96,24 @@ sap.ui.define(
                 }
             },
 
-            onFileSelected: function(evt) {
+            onBreadcrumbs: function(evt) {
                 var object = evt.getSource().getBindingContext().getObject();
-                if(object.isDirectory) {
-                    this.navToDirectory(object.path);
-                } else {
-                    this.download(object.path);
-                }
+                this.navToDirectory(object.path);
+            },
+
+            onDirectorySelected: function(evt) {
+                var object = evt.getSource().getBindingContext().getObject();
+                this.navToDirectory(object.path);
+            },
+
+            onDownloadSelected: function(evt) {
+                var object = evt.getSource().getBindingContext().getObject();
+                this.download(object.path);
+            },
+
+            onStreamSelected: function(evt) {
+                var object = evt.getSource().getBindingContext().getObject();
+                this.stream(object.label, object.path);
             },
 
             navToDirectory: function(path) {
@@ -101,7 +132,39 @@ sap.ui.define(
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
+            },
+
+            formatterPreviewUrl: function(path) {
+                return "http://" + this.getBaseUrl() + "/preview" + "?FileName=" + path;
+            },
+
+            stream: function(title, path) {
+                var url = "http://" + this.getBaseUrl() + "/stream" + "?FileName=" + path;
+                this.setModelData({
+                    title: title,
+                    url: url
+                }, "stream");
+                this.openVideoPlayerPopup();
+            },
+
+            getVideoPlayerPopup: function() {
+                if(!this._videoPlayerPopup) {
+                    this._videoPlayerPopup = sap.ui.xmlfragment("com.cubiclan.boxconv.fragment.VideoPlayer", this);
+                    this.getView().addDependent(this._videoPlayerPopup);
+                }
+                return this._videoPlayerPopup;
+            },
+
+            openVideoPlayerPopup: function() {
+                var popup = this.getVideoPlayerPopup();
+                popup.open();
+            },
+
+            closeVideoPlayerPopup: function() {
+                this._videoPlayerPopup.destroy();
+                this._videoPlayerPopup = null;
             }
+
         });
     },
 );
