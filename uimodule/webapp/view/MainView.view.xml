@@ -2,7 +2,7 @@
     xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
     xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout"
     xmlns:control="com.cubiclan.boxconv.control">
-    <Page id="page" title="{i18n>title}">
+    <Page id="page" title="{i18n>title}" showFooter="{= ${progress>/list}.length > 0}">
     <subHeader>
         <Toolbar>
             <content>
@@ -27,32 +27,43 @@
                 <columns>
                     <Column width="64px" hAlign="Center"></Column>
                     <Column></Column>
-                    <Column></Column>
+                    <Column width="128px"></Column>
                     <Column width="128px" hAlign="Center"></Column>
                 </columns>
                 <items>
-                    <ColumnListItem>
+                    <ColumnListItem type="Active" press="onItemPress">
                         <cells>
                             <!-- <core:Icon src="{= ${isDirectory} ? 'sap-icon://open-folder' : 'sap-icon://document' }"/> -->
                             <core:Icon src="{parts:['isDirectory','fileType'],formatter:'.formatExtensionTypeIcon'}"/>
                             <Text text="{label}" tooltip="{nombre}"/>
                             <Text text="{path: 'length', formatter: '.formatter.fileSize' }" visible="{isFile}"/>
                             <HBox justifyContent="End">
-                                <Button icon="sap-icon://media-play" visible="{webAccessible}" press="onStreamSelected" class="sapUiSmallMarginBegin"/>
-                                <Button icon="sap-icon://arrow-right" visible="{isDirectory}" press="onDirectorySelected" class="sapUiSmallMarginBegin"/>
-                                <Button icon="sap-icon://download" visible="{isFile}" press="onDownloadSelected" class="sapUiSmallMarginBegin"/>
+                                <Button icon="sap-icon://media-play" tooltip="{i18n>play}" visible="{webAccessible}" press="onStreamSelected" class="sapUiSmallMarginBegin"/>
+                                <Button icon="sap-icon://arrow-right" tooltip="{i18n>play}" visible="{isDirectory}" press="onDirectorySelected" class="sapUiSmallMarginBegin"/>
+                                <Button icon="sap-icon://download" tooltip="{i18n>play}" visible="{isFile}" press="onDownloadSelected" class="sapUiSmallMarginBegin"/>
                             </HBox>
                         </cells>
                     </ColumnListItem>
                 </items>
             </Table>
-            <l:Grid defaultSpan="XL2 L3 M4 S6" content="{path: '/DATA/files', sorter: {path: '', comparator: '.typeComparator'}}" visible="{= ${itemsMode>/mode} === 'grid' }">
-                <control:FileCard isDirectory="{isDirectory}">
+            <l:Grid defaultSpan="XL2 L3 M4 S6" content="{path: '/DATA/files', sorter: {path: '', comparator: '.typeComparator'}}" visible="{= ${itemsMode>/mode} === 'grid' }" class="sapUiSmallMarginTop">
+                <control:FileCard isDirectory="{isDirectory}" press="onItemPress">
                     <control:icon><core:Icon src="{parts:['isDirectory','fileType'],formatter:'.formatExtensionTypeIcon'}"/></control:icon>
                     <control:image><Image src="{path:'path',formatter:'.formatterPreviewUrl'}" /></control:image>
-                    <control:label><Label text="{label}"/></control:label>
+                    <control:label><Label text="{label}" tooltip="{label}"/></control:label>
+                    <control:actions>
+                        <MenuItem icon="sap-icon://media-play" text="{i18n>play}" tooltip="{i18n>play}" visible="{webAccessible}" press="onStreamSelected"/>
+                        <MenuItem icon="sap-icon://arrow-right" text="{i18n>open}" tooltip="{i18n>play}" visible="{isDirectory}" press="onDirectorySelected"/>
+                        <MenuItem icon="sap-icon://download" text="{i18n>download}" tooltip="{i18n>play}" visible="{isFile}" press="onDownloadSelected"/>
+                    </control:actions>
                 </control:FileCard>
             </l:Grid>
         </content>
+        <footer>
+            <Toolbar>
+                <Button icon="sap-icon://cloud" type="Emphasized" press="openTasksPopup"/>
+                <Text text="{= ${progress>/list}.length } {i18n>downloads}"/>
+            </Toolbar>
+        </footer>
     </Page>
 </mvc:View>

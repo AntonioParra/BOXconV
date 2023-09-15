@@ -1,0 +1,30 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core" xmlns:control="com.cubiclan.boxconv.control">
+	<Dialog contentWidth="400px">
+        <customHeader>
+            <Toolbar>
+                <Title text="{i18n>downloads}"></Title>
+                <ToolbarSpacer />
+                <Button icon="sap-icon://decline" press="closeTasksPopup"></Button>
+            </Toolbar>
+        </customHeader>
+        <Table items="{progress>/list}">
+            <columns>
+                <Column width="32px" hAlign="Center"></Column>
+                <Column></Column>
+                <Column width="48px" hAlign="Center"></Column>
+            </columns>
+            <items>
+                <ColumnListItem>
+                    <cells>
+                        <core:Icon src="sap-icon://download" color="#0854a0"/>
+                        <VBox>
+                            <Text text="{progress>name}" />
+                            <ProgressIndicator percentValue="{parts:['progress>pr/loaded', 'progress>pr/total'], formatter:'.percent'}" state="Information"/>
+                        </VBox>
+                        <Button icon="sap-icon://delete" type="Reject" press="onPressAbort"/>
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+    </Dialog>
+</core:FragmentDefinition>

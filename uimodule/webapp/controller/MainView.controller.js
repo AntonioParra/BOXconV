@@ -20,6 +20,7 @@ sap.ui.define(
                 router.getRoute("RouteMainViewWithBase64Path").attachMatched(function(oEvent) {
                     this.onPath(atob(oEvent.getParameter("arguments").base64Path));
                 }, this);
+                this.getProgressModel();
             },
 
             onPath: function(path) {
@@ -30,7 +31,7 @@ sap.ui.define(
                 this.getView().setBusy(true);
                 this.setModelData();
 
-                var url = "http://" + this.getBaseUrl() + "/listDirectory" + "?Directory=" + path;
+                var url = this.getBaseUrl() + "/listDirectory" + "?Directory=" + path;
                 fetch(url).then(function(response){
                     return response.json();
                 }).then(function(data) {
@@ -108,12 +109,33 @@ sap.ui.define(
 
             onDownloadSelected: function(evt) {
                 var object = evt.getSource().getBindingContext().getObject();
-                this.download(object.path);
+                this.download(object.path, object.nombre);
             },
 
             onStreamSelected: function(evt) {
                 var object = evt.getSource().getBindingContext().getObject();
                 this.stream(object.label, object.path);
+            },
+
+            onUnknownSelected: function(evt) {
+                var object = evt.getSource().getBindingContext().getObject();
+
+                this.setModelData({
+                    object: object
+                }, "file");
+                this.openDownloadPopup();
+            },
+
+            onItemPress: function(evt) {
+                var object = evt.getSource().getBindingContext().getObject();
+
+                if(object.isDirectory) {
+                    return this.onDirectorySelected(evt);
+                } else if(object.webAccessible) {
+                    return this.onStreamSelected(evt);
+                } else {
+                    return this.onUnknownSelected(evt);
+                }
             },
 
             navToDirectory: function(path) {
@@ -124,22 +146,50 @@ sap.ui.define(
                 }
             },
 
-            download: function(path) {
-                var url = "http://" + this.getBaseUrl() + "/download" + "?FileName=" + path;
-                var link = document.createElement("a");
-                link.setAttribute('download', '');
-                link.href = url;
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
+            download: function(path, blobName) {
+                var url = this.getBaseUrl() + "/download" + "?FileName=" + path;
+                // var link = document.createElement("a");
+                // link.setAttribute('download', '');
+                // link.href = url;
+                // document.body.appendChild(link);
+                // link.click();
+                // link.remove();
+
+                var id = new Date().getTime();
+                var blob;
+                var xmlHTTP = new XMLHttpRequest();
+                xmlHTTP.open('GET', url, true);
+                xmlHTTP.responseType = 'arraybuffer';
+                xmlHTTP.onload = function(e) {
+                    blob = new Blob([this.response]);   
+                };
+                xmlHTTP.onprogress = function(pr) {
+                    this.addProgressData(id, "download", blobName, xmlHTTP, pr);
+                }.bind(this);
+                xmlHTTP.onloadend = function(e){
+                    if(blob) {
+                        var fileName = blobName;
+                        var tempEl = document.createElement("a");
+                        document.body.appendChild(tempEl);
+                        tempEl.style = "display: none";
+                        url = window.URL.createObjectURL(blob);
+                        tempEl.href = url;
+                        tempEl.download = fileName;
+                        tempEl.click();
+                        window.URL.revokeObjectURL(url);
+                    }
+                    this.removeProgressData(id);
+                }.bind(this);
+                this.addProgressData(id, "download", blobName, xmlHTTP, null);
+                xmlHTTP.send();
             },
 
             formatterPreviewUrl: function(path) {
-                return "http://" + this.getBaseUrl() + "/preview" + "?FileName=" + path;
+                return this.getBaseUrl() + "/preview" + "?FileName=" + path;
             },
 
             stream: function(title, path) {
-                var url = "http://" + this.getBaseUrl() + "/stream" + "?FileName=" + path;
+                var url = this.getBaseUrl() + "/stream" + "?FileName=" + path;
                 this.setModelData({
                     title: title,
                     url: url
@@ -163,6 +213,92 @@ sap.ui.define(
             closeVideoPlayerPopup: function() {
                 this._videoPlayerPopup.destroy();
                 this._videoPlayerPopup = null;
+            },
+
+            getDownloadPopup: function() {
+                if(!this._downloadPopup) {
+                    this._downloadPopup = sap.ui.xmlfragment("com.cubiclan.boxconv.fragment.Download", this);
+                    this.getView().addDependent(this._downloadPopup);
+                }
+                return this._downloadPopup;
+            },
+
+            openDownloadPopup: function() {
+                var popup = this.getDownloadPopup();
+                popup.open();
+            },
+
+            closeDownloadPopup: function() {
+                this._downloadPopup.destroy();
+                this._downloadPopup = null;
+            },
+
+            onDownloadPopup: function() {
+                var object = this.getModel("file").getProperty("/object");
+                this.download(object.path, object.nombre);
+                this.closeDownloadPopup();
+            },
+
+            getProgressModel: function() {
+                var model = this.getView().getModel("progress");
+                if(!model) {
+                    model = new JSONModel({
+                        list: []
+                    });
+                    this.setModel(model, "progress");
+                }
+                return model;
+            },
+
+            addProgressData: function(id, type, name, xhr, pr) {
+                var model = this.getProgressModel();
+                var list = model.getProperty("/list");
+                var found = list.find(function(item) {
+                    return item.id === id;
+                });
+                if(found) {
+                    found.pr = pr;
+                } else {
+                    list.push({id, type, name, xhr, pr});
+                }
+                list = list.reduce(function(acc, cur){
+                    acc.push(cur);
+                    return acc;
+                }, []);
+                this.setModel(new JSONModel({list: list}), "progress");
+            },
+
+            removeProgressData: function(id) {
+                var model = this.getProgressModel();
+                var list = model.getProperty("/list");
+                list = list.filter(function(item) {
+                    return item.id !== id;
+                });
+                model.setProperty("/list", list);
+                model.refresh();
+            },
+
+            getTasksPopup: function() {
+                if(!this._tasksPlayerPopup) {
+                    this._tasksPlayerPopup = sap.ui.xmlfragment("com.cubiclan.boxconv.fragment.Tasks", this);
+                    this.getView().addDependent(this._tasksPlayerPopup);
+                }
+                return this._tasksPlayerPopup;
+            },
+
+            openTasksPopup: function() {
+                var popup = this.getTasksPopup();
+                popup.open();
+            },
+
+            closeTasksPopup: function() {
+                this._tasksPlayerPopup.destroy();
+                this._tasksPlayerPopup = null;
+            },
+
+            onPressAbort: function(evt) {
+                var object = evt.getSource().getBindingContext("progress").getObject();
+                object.xhr.abort()
             }
 
         });

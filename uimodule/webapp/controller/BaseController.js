@@ -10,6 +10,13 @@ sap.ui.define([
     return Controller.extend("com.cubiclan.boxconv.controller.BaseController", {
         formatter: formatter,
 
+        getBaseUrl: function () {
+            if(location.hostname === "localhost") {
+                return "http://" + "192.168.68.134:8080/Cuberite/api/boxconv";
+            }
+            return "/Cuberite/api/boxconv";
+        },
+
         /**
          * Convenience method for getting the view model by name in every controller of the application.
          * @public
@@ -71,10 +78,6 @@ sap.ui.define([
             }
         },
 
-        getBaseUrl: function () {
-            return "192.168.68.134:8080/Cuberite/api/boxconv";
-        },
-
         formatExtensionTypeIcon: function(isDirectory, fileType) {
             if(isDirectory) {
                 return "sap-icon://open-folder";
@@ -96,6 +99,17 @@ sap.ui.define([
                 "": "sap-icon://document",
             };
             return dicc[fileType] || "sap-icon://document";
+        },
+
+        percent: function(cur, max) {
+            return cur / max * 100;
+        },
+
+        length: function(arr) {
+            if(!arr) {
+                return 0;
+            }
+            return arr.length;
         }
     });
 });

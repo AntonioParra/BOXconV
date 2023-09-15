@@ -12,8 +12,24 @@
 
 
 
+
+
 .fileCard {
-    height: 150px;
-    border: 1px solid red;
+    border: 1px solid #bebebe;
+    height: 200px;
     border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
 }
+
+.fileCard img {
+    height: calc( 100% - 2rem );
+    width: 100%;
+    object-fit: cover;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-shadow: 10px 10px 30px #bebebe,
+    0px 0px 0px #ffffff;
+}
+
+
